@@ -1,5 +1,7 @@
 # Book Recommendation Web · API 说明
 
+> English version: [API.en.md](API.en.md)
+
 面向前端 `frontend/` 目录的所有接口均由 Flask 服务（`backend/src/services/api.py`）提供。本文档描述这些接口的用途、参数与典型返回结构，便于联调与自测，并在末尾补充了国际化/部署相关注意事项。
 
 ## 0. 基本信息
