@@ -3,6 +3,13 @@
 .idea/
 *.iml
 
+# Python / venv
+__pycache__/
+*.pyc
+.venv/
+venv/
+backend/.venv/
+
 # Logs
 *.log
 npm-debug.log*
@@ -10,10 +17,17 @@ npm-debug.log*
 # Env & local configs
 .env*
 
-# Vite / Node
+# Frontend (Vite / Node)
 node_modules/
 dist/
 
 # Build outputs
 frontend/dist/
 
+# Backend data artifacts
+#backend/data/raw/
+#backend/data/processed/*.csv
+#backend/data/processed/*.json
+#backend/data/processed/*.txt
+#backend/data/processed/*.png
+/apps.apple.com/

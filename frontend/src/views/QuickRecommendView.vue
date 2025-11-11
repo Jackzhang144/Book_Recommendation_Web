@@ -1,23 +1,39 @@
 <script setup>
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 import { RouterLink } from 'vue-router'
 import SearchBar from '../components/SearchBar.vue'
 import BookCard from '../components/BookCard.vue'
 import { getRecommendationsByTitle } from '../services/api'
+import { useI18n } from '../i18n'
 
 const title = ref('')
 const loading = ref(false)
-const error = ref('')
+const errorMessage = ref('')
+const errorKey = ref('')
 const queryBook = ref(null)
 const recommendations = ref([])
+const { t } = useI18n()
+
+const formError = computed(() => {
+  const localized = errorKey.value ? t(`quick.errors.${errorKey.value}`) : ''
+  if (errorMessage.value && localized) {
+    return `${errorMessage.value} · ${localized}`
+  }
+  return errorMessage.value || localized
+})
+
+const clearError = () => {
+  errorMessage.value = ''
+  errorKey.value = ''
+}
 
 const handleSubmit = async () => {
   const keyword = title.value.trim()
-  error.value = ''
+  clearError()
   queryBook.value = null
   recommendations.value = []
   if (!keyword) {
-    error.value = '请输入你想查询的书名'
+    errorKey.value = 'missingKeyword'
     return
   }
   loading.value = true
@@ -26,10 +42,13 @@ const handleSubmit = async () => {
     queryBook.value = data.query_book || null
     recommendations.value = data.recommendations || []
     if (!recommendations.value.length) {
-      error.value = '该标题暂无推荐结果'
+      errorKey.value = 'noRecommendations'
     }
   } catch (err) {
-    error.value = err.message || '推荐接口暂不可用'
+    if (err?.message) {
+      errorMessage.value = err.message
+    }
+    errorKey.value = 'apiUnavailable'
   } finally {
     loading.value = false
   }
@@ -38,30 +57,30 @@ const handleSubmit = async () => {
 
 <template>
   <div class="page">
-    <RouterLink class="link-button" :to="{ name: 'home' }">← 返回智能搜索</RouterLink>
+    <RouterLink class="link-button" :to="{ name: 'home' }">{{ t('quick.back') }}</RouterLink>
     <section class="section">
       <header class="section__header">
         <div>
-          <p class="eyebrow">快速推荐</p>
-          <h1>搜索即推荐的最短路径</h1>
-          <p class="muted">输入目标书名后立刻命中 GET /recommendations/by-title，直接展示 Top-K 相似读物，适合答辩时的即席演示。</p>
+          <p class="eyebrow">{{ t('quick.sectionIntro.eyebrow') }}</p>
+          <h1>{{ t('quick.sectionIntro.title') }}</h1>
+          <p class="muted">{{ t('quick.sectionIntro.helper') }}</p>
         </div>
       </header>
       <SearchBar
         v-model="title"
-        label="输入书名"
-        placeholder="例如 三体"
+        :label="t('quick.searchBar.label')"
+        :placeholder="t('quick.searchBar.placeholder')"
         :loading="loading"
-        button-text="获取推荐"
+        :button-text="t('quick.searchBar.button')"
         @submit="handleSubmit"
       />
-      <p v-if="error" class="warning">{{ error }}</p>
+      <p v-if="formError" class="warning">{{ formError }}</p>
     </section>
 
     <section v-if="queryBook" class="section">
       <header class="section__header">
         <div>
-          <p class="eyebrow">匹配的原书</p>
+          <p class="eyebrow">{{ t('quick.sections.matchedEyebrow') }}</p>
           <h2>{{ queryBook.title }}</h2>
         </div>
       </header>
@@ -71,12 +90,14 @@ const handleSubmit = async () => {
     <section class="section">
       <header class="section__header">
         <div>
-          <p class="eyebrow">推荐结果</p>
-          <h2>系统返回的 5 本相似书</h2>
+          <p class="eyebrow">{{ t('quick.sections.recommendEyebrow') }}</p>
+          <h2>{{ t('quick.sections.recommendTitle') }}</h2>
         </div>
       </header>
-      <div v-if="loading" class="placeholder">正在召回推荐...</div>
-      <div v-else-if="!recommendations.length" class="placeholder">完成上方输入后即可展示推荐结果</div>
+      <div v-if="loading" class="placeholder">{{ t('quick.placeholders.loading') }}</div>
+      <div v-else-if="!recommendations.length" class="placeholder">
+        {{ t('quick.placeholders.empty') }}
+      </div>
       <div v-else class="grid grid--compact">
         <BookCard v-for="book in recommendations" :key="book.book_id" :book="book" compact />
       </div>

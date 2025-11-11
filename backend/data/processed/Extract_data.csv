@@ -1,0 +1,25 @@
+Dataset Shape,Total Null Values,Null Columns,Dataset Information,Unique Values per Column,Data Types
+"(271360, 8)",3577,"['Book-Author', 'Year-Of-Publication', 'Publisher', 'Image-URL-L']","<class 'pandas.core.frame.DataFrame'>
+RangeIndex: 271360 entries, 0 to 271359
+Data columns (total 8 columns):
+ #   Column               Non-Null Count   Dtype 
+---  ------               --------------   ----- 
+ 0   ISBN                 271360 non-null  object
+ 1   Book-Title           271360 non-null  object
+ 2   Book-Author          271358 non-null  object
+ 3   Year-Of-Publication  267790 non-null  object
+ 4   Publisher            271358 non-null  object
+ 5   Image-URL-S          271360 non-null  object
+ 6   Image-URL-M          271360 non-null  object
+ 7   Image-URL-L          271357 non-null  object
+dtypes: object(8)
+memory usage: 16.6+ MB
+","ISBN                   271360
+Book-Title             242135
+Book-Author            102022
+Year-Of-Publication       201
+Publisher               16807
+Image-URL-S            271044
+Image-URL-M            271044
+Image-URL-L            271041
+dtype: int64","{'ISBN': ""<class 'str'>"", 'Book-Title': ""<class 'str'>"", 'Book-Author': ""<class 'str'>, <class 'float'>"", 'Year-Of-Publication': ""<class 'int'>, <class 'pandas._libs.missing.NAType'>, <class 'str'>"", 'Publisher': ""<class 'str'>, <class 'float'>"", 'Image-URL-S': ""<class 'str'>"", 'Image-URL-M': ""<class 'str'>"", 'Image-URL-L': ""<class 'str'>, <class 'float'>""}"

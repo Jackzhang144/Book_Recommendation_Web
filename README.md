@@ -1,61 +1,116 @@
-# Book Recommendation Web · Front-end
+# Book Recommendation Web
 
-Vue 3 + Vite 单页应用，对应《任务介绍.md》和《Book Recommendation Web API 文档（草案）》要求的交付场景，已完成中文文案与提示语的统一。
+一个端到端的图书推荐 Demo：前端基于 Vue 3 + Vite 呈现“搜索—详情—算法切换—快速推荐”全流程，并内置中英文双语 UI；后端提供数据探索、特征处理、三种推荐算法（LightGBM / LightFM / DIN 风格 TF-IDF）及统一 REST API。团队可参考 `apps.apple.com/` 目录中的 Apple App Store UI 拆解文档，复刻或延展更精致的界面与动效。
 
-## 功能概览
+---
 
-- **首页**：书名/作者搜索（GET `/books/search`）、实时提示与精选推荐（GET `/recommendations/by-title`）
-- **图书详情**：展示图书信息（GET `/books/{book_id}`）、默认推荐（GET `/recommendations/by-book`）、多算法切换对比
-- **快速推荐页**：输入书名后直接输出 Top-K 结果（GET `/recommendations/by-title?q=xxx&k=5`）
+## 1. 项目亮点
 
-请求层内置超时与取消控制，可防止重复搜索造成的闪烁。
+- **多算法对比**：LightGBM 排序、矩阵分解协同过滤、内容相似推荐均可在详情页切换查看，满足课程对算法多样性的要求。
+- **实时交互**：前端首页支持联想搜索与精选推荐，详情页展示默认推荐 + 算法切换，快速推荐页用于答辩时即输即出。
+- **多语言体验**：`src/i18n` 提供轻量国际化，默认跟随浏览器/LocalStorage 切换中英，对应的切换入口位于导航栏 `LanguageToggle`。
+- **完整数据流程**：`backend/eda/` 提供数据概览、清洗、特征工程、可视化脚本，所有产物统一放在 `backend/data/processed/` 方便复现。
+- **接口契约清晰**：API 与《Book Recommendation Web API 文档（草案）》保持一致，前端只需配置 `VITE_API_BASE_URL` 即可对接。
 
-## 配置与运行
+---
 
-1. 在部署/本地运行之前设置环境变量（可写入 `.env`）：
+## 2. 目录总览
 
-   ```bash
-   VITE_API_BASE_URL=http://localhost:8000/api   # 必需，指向真实后端
-   VITE_API_TIMEOUT=10000                        # 可选，接口超时毫秒
-   VITE_SEARCH_LIMIT=12                          # 可选，首页搜索返回数量
-   VITE_SHOWCASE_TITLE=Harry Potter              # 可选，精选推荐的基准书名
-   ```
+```
+frontend/   # Vue 3 + Vite 前端
+│
+├─ src/
+│  ├─ views/              # Home / BookDetail / QuickRecommend
+│  ├─ components/         # SearchBar、BookCard 等复用组件
+│  ├─ services/api.js     # 统一请求封装与错误处理
+│  ├─ i18n/               # 语言状态、文案词典、LanguageToggle 使用的 composable
+│  └─ config/appConfig.js # API 地址、超时、默认参数
+└─ docs/                  # API 与使用说明
 
-   若未设置，`src/config/appConfig.js` 会 fallback 到默认值。
+backend/
+│
+├─ data/
+│  ├─ raw/                # 原始 Books.csv / Ratings.csv / Users.csv
+│  └─ processed/          # 清洗结果、特征表、可视化、EDA 报告
+├─ eda/                   # 覆盖任务 (1)-(2) 的脚本
+├─ src/
+│  ├─ data_pipeline.py    # 数据加载/清洗逻辑
+│  ├─ book_repository.py  # 书目查询、序列化
+│  ├─ recommendation/     # LightGBM / LightFM / DIN(TF-IDF)
+│  └─ services/api.py     # Flask + Flask-CORS REST API
+├─ requirements.txt
+└─ tests.py               # HTTP smoke test
+```
 
-2. 安装依赖并启动开发模式：
+---
 
-   ```bash
-   cd frontend
-   npm install
-   npm run dev
-   ```
+## 3. 快速启动
 
-3. 构建生产包：
+### 后端
 
-   ```bash
-   npm run build
-   ```
+```bash
+cd backend
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
 
-   生成的 `dist/` 可部署到任意静态托管，确保上线环境同样提供 `VITE_API_BASE_URL`。
+# 生成/更新数据产物（可选）
+python eda/dataset_overview.py
+python eda/preprocess_books.py
+python eda/examine_books.py
+python eda/visualize_books.py
 
-## 关键文件
+# 启动 API（默认 http://localhost:8000/api）
+python -m src.services.api
+```
 
-| 功能 | 路径 |
+可选：另开终端运行 `python backend/tests.py` 对 API 做一次简单巡检。
+
+### 前端
+
+```bash
+cd frontend
+npm install
+VITE_API_BASE_URL=http://localhost:8000/api npm run dev
+```
+
+生产构建：`npm run build`，生成的 `dist/` 可部署到任意静态托管，部署环境同样设置 `VITE_API_BASE_URL`。详尽的部署实践（含 Nginx/Gunicorn/静态托管示例）见新增的 [DEPLOYMENT.md](DEPLOYMENT.md)。
+
+---
+
+## 4. 主要页面与接口映射
+
+| 页面/模块 | 使用的 API |
 | --- | --- |
-| 路由配置 | `src/router/index.js` |
-| API 请求封装 | `src/services/api.js` |
-| 首页 / 搜索 | `src/views/HomeView.vue` |
-| 图书详情 + 算法对比 | `src/views/BookDetailView.vue` |
-| 快速推荐 | `src/views/QuickRecommendView.vue` |
+| 首页搜索框 | `GET /books/search?q=...&limit=...` |
+| 精选推荐 | `GET /recommendations/by-title?q=<配置书名>&k=5` |
+| 图书详情顶部 | `GET /books/{book_id}` |
+| 相似推荐区块 | `GET /recommendations/by-book?book_id=...`（默认 LightGBM） |
+| 算法切换 | `GET /recommendations/by-book-and-algorithm?book_id=...&algorithm=lightgbm/cf_mf/din_content`（支持 `user_cf/item_cf/deepfm` alias） |
+| 快速推荐页 | `GET /recommendations/by-title?q=...&k=5` |
 
-## 文档
+所有响应均遵循统一结构：
 
-- 详尽 API 说明：`docs/API.md`
-- 操作 / 运维说明：`docs/USAGE.md`
+```json
+{
+  "code": 0,
+  "message": "ok",
+  "data": { ... }
+}
+```
 
-## 下一步建议
+---
 
-1. 根据后端字段补齐封面、标签等更多展示信息。
-2. 在 `BookDetailView.vue` 的 `algorithmOptions` 中扩展更多模型，并与后端保持同名。
-3. 如需大屏/演示页，可基于现有组件组合新的路由或图表模块。
+## 5. 任务对照
+
+| 任务 | 说明 |
+| --- | --- |
+| (1) 数据集信息提取 | `eda/dataset_overview.py` 输出 shape、缺失值、info、unique、comparison dataset |
+| (2) 数据探索与预处理 | `eda/preprocess_books.py`、`eda/examine_books.py`、`eda/visualize_books.py` 负责特征工程与可视化 |
+| (3) 算法定义 | LightGBM、LightFM、DIN(TF-IDF) 三种算法，`backend/src/recommendation/algorithms/` |
+| (4) 图书推荐实现 | `/api/recommendations/*` 接口统一返回 Top-K 推荐，支持按书名/ID/算法切换 |
+| (5) 系统展示 | `frontend/` 完成“搜索—详情—算法对比—快速推荐”的网页 Demo（含 i18n / LanguageToggle） |
+
+---
+
+如需更多接口字段，请参考 `frontend/docs/API.md`；前端使用指南见 `frontend/docs/USAGE.md`；部署流程见 `DEPLOYMENT.md`。欢迎基于现有架构扩展更多算法、特征或可视化。***

@@ -1,5 +1,6 @@
 <script setup>
-import { computed } from 'vue'
+import { computed, useId } from 'vue'
+import { useI18n } from '../i18n'
 
 const props = defineProps({
   modelValue: {
@@ -8,11 +9,11 @@ const props = defineProps({
   },
   placeholder: {
     type: String,
-    default: '输入书名或关键词',
+    default: '',
   },
   label: {
     type: String,
-    default: '搜索图书 / 推荐',
+    default: '',
   },
   loading: {
     type: Boolean,
@@ -20,33 +21,41 @@ const props = defineProps({
   },
   buttonText: {
     type: String,
-    default: '开始检索',
+    default: '',
   },
 })
 
 const emit = defineEmits(['update:modelValue', 'submit'])
+const { t } = useI18n()
+const uid = useId()
+const inputId = computed(() => `search-bar-${uid}`)
 
 const isDisabled = computed(() => props.loading)
 
 const handleSubmit = () => {
   emit('submit')
 }
+
+const resolvedLabel = computed(() => props.label || t('searchBar.label'))
+const resolvedPlaceholder = computed(() => props.placeholder || t('searchBar.placeholder'))
+const resolvedButtonText = computed(() => props.buttonText || t('searchBar.button'))
+const resolvedLoadingText = computed(() => t('searchBar.loading'))
 </script>
 
 <template>
   <form class="search-bar" @submit.prevent="handleSubmit">
-    <label class="search-bar__label" :for="label">{{ label }}</label>
+    <label class="search-bar__label" :for="inputId">{{ resolvedLabel }}</label>
     <div class="search-bar__controls">
       <input
-        :id="label"
+        :id="inputId"
         class="search-bar__input"
-        :placeholder="placeholder"
+        :placeholder="resolvedPlaceholder"
         :value="modelValue"
         :disabled="loading"
         @input="$emit('update:modelValue', $event.target.value)"
       />
       <button class="search-bar__button" type="submit" :disabled="isDisabled">
-        {{ loading ? '查询中...' : buttonText }}
+        {{ loading ? resolvedLoadingText : resolvedButtonText }}
       </button>
     </div>
   </form>

@@ -1,12 +1,12 @@
-# Book Recommendation Web · API 文档
+# Book Recommendation Web · API 说明
 
-> 与前端已经对接的接口说明，覆盖《任务介绍.md》+《Book Recommendation Web API 文档（草案）》中要求的能力。实际字段若与下方不同，请在后端保持兼容或在前端做适配。
+面向前端 `frontend/` 目录的所有接口均由 Flask 服务（`backend/src/services/api.py`）提供。本文档描述这些接口的用途、参数与典型返回结构，便于联调与自测，并在末尾补充了国际化/部署相关注意事项。
 
-## 0. 概览
+## 0. 基本信息
 
-- **Base URL**：`VITE_API_BASE_URL` 环境变量（默认 `http://localhost:8000/api`，亦可在 `src/config/appConfig.js` 覆盖）
-- **数据格式**：`application/json`
-- **统一响应结构**：
+- **Base URL**：`VITE_API_BASE_URL`，默认 `http://localhost:8000/api`
+- **响应格式**：`application/json`
+- **统一响应体**：
 
 ```json
 {
@@ -18,39 +18,29 @@
 
 | 字段 | 说明 |
 | --- | --- |
-| `code` | 0 表示成功；非 0 为业务错误，前端会显示 `message` |
-| `message` | 人类可读的提示，例如“无推荐结果” |
-| `data` | 具体业务数据，结构见下方接口 |
+| `code` | 0 表示成功，其他值表示业务异常 |
+| `message` | 友好的提示文案 |
+| `data` | 实际业务数据 |
 
-### 错误码建议
-
-| code | 说明 | 前端处理 |
-| --- | --- | --- |
-| 0 | 成功 | 正常渲染 |
-| 1 | 参数缺失/非法 | 提示“输入不合法，请检查后重试” |
-| 2 | 无数据 | 展示“没有找到相关图书” |
-| 3 | 标题匹配失败或歧义 | 请用户输入更精确的书名 |
-| 404 | 资源不存在 | 跳回搜索页 / 显示错误卡片 |
-| 408 | 请求超时 | 前端会提示“请求超时，请稍后重试” |
-| 500 | 服务器错误 | 提示稍后再试 |
+常见错误码：`1` 参数错误、`2` 无数据、`3` 书名歧义、`404` 查无此书、`408` 超时、`500` 服务器错误。
 
 ---
 
-## 1. 图书搜索 / 自动补全
+## 1. 搜索 / 自动补全
 
-### 1.1 GET `/books/search`
-- **用途**：首页搜索框、自动补全列表
-- **Query 参数**：
-  | 名称 | 类型 | 必填 | 说明 |
-  | --- | --- | --- | --- |
-  | `q` | string | 是 | 书名关键词（大小写不敏感） |
-  | `limit` | int | 否 | 返回条数，默认 10，最大 50 |
-- **成功响应**：
+### GET `/books/search`
+首页搜索框与自动补全均调用此接口。
+
+| 参数 | 说明 |
+| --- | --- |
+| `q` *(必填)* | 关键词（书名 / 作者片段） |
+| `limit` | 返回条数，默认 10 |
+
+成功示例：
 
 ```json
 {
   "code": 0,
-  "message": "ok",
   "data": {
     "books": [
       {
@@ -60,9 +50,7 @@
         "author": "J. K. Rowling",
         "year_of_publication": 1998,
         "publisher": "Scholastic",
-        "image_url_s": "https://...",
-        "image_url_m": "https://...",
-        "image_url_l": "https://..."
+        "image_url_m": "https://..."
       }
     ]
   }
@@ -73,10 +61,10 @@
 
 ## 2. 图书详情
 
-### 2.1 GET `/books/{book_id}`
-- **用途**：详情页顶部信息卡
-- **路径参数**：`book_id`（string）
-- **成功响应**：
+### GET `/books/{book_id}`
+详情页顶部卡片。
+
+成功示例：
 
 ```json
 {
@@ -84,101 +72,46 @@
   "data": {
     "book": {
       "book_id": "12345",
+      "isbn": "0439708184",
       "title": "Harry Potter and the Sorcerer's Stone",
       "author": "J. K. Rowling",
       "year_of_publication": 1998,
       "publisher": "Scholastic",
-      "summary": "...",
-      "image_url_l": "https://...",
-      "genres": ["Fantasy", "Adventure"]
+      "image_url_m": "https://..."
     }
   }
 }
 ```
 
-> 前端会兜底处理缺失字段，但建议至少返回 `book_id/title/author/image_url_m`。
-
 ---
 
-## 3. 图书推荐
+## 3. 推荐接口
 
 ### 3.1 GET `/recommendations/by-book`
-- **用途**：详情页中的“相似推荐”卡片
-- **Query 参数**：
-  | 名称 | 类型 | 必填 | 说明 |
-  | --- | --- | --- | --- |
-  | `book_id` | string | 是 | 目标图书 ID |
-  | `k` | int | 否 | 推荐数量，默认 5 |
-- **成功响应**：
+详情页默认的“相似读物”列表（默认使用 LightGBM）。
 
-```json
-{
-  "code": 0,
-  "data": {
-    "query_book": { "book_id": "12345", "title": "Harry Potter and the Sorcerer's Stone" },
-    "recommendations": [
-      {
-        "book_id": "23456",
-        "title": "Harry Potter and the Chamber of Secrets",
-        "author": "J. K. Rowling",
-        "image_url_m": "https://...",
-        "score": 0.93
-      }
-    ]
-  }
-}
-```
+| 参数 | 说明 |
+| --- | --- |
+| `book_id` *(必填)* | 目标书 |
+| `k` | 推荐条数，默认 5 |
 
 ### 3.2 GET `/recommendations/by-book-and-algorithm`
-- **用途**：详情页“算法切换”区块
-- **Query 参数**：
-  | 名称 | 类型 | 必填 | 说明 |
-  | --- | --- | --- | --- |
-  | `book_id` | string | 是 | 目标图书 ID |
-  | `algorithm` | string | 是 | `lightgbm` / `user_cf` / `item_cf` / `deepfm` 等 |
-  | `k` | int | 否 | 推荐数量，默认 5 |
-- **成功响应**：
+详情页算法切换使用。
+
+| 参数 | 说明 |
+| --- | --- |
+| `book_id` *(必填)* | 目标书 |
+| `algorithm` | `lightgbm` / `cf_mf` / `din_content`，也支持 `user_cf`、`item_cf`、`deepfm` 等别名 |
+| `k` | 推荐条数，默认 5 |
+
+返回示例：
 
 ```json
 {
   "code": 0,
   "data": {
-    "algorithm": {
-      "id": "lightgbm",
-      "name": "LightGBM Ranker"
-    },
-    "recommendations": [
-      {
-        "book_id": "34567",
-        "title": "Fantastic Beasts and Where to Find Them",
-        "author": "J. K. Rowling",
-        "image_url_m": "https://...",
-        "score": 0.82
-      }
-    ]
-  }
-}
-```
-
-### 3.3 GET `/recommendations/by-title`
-- **用途**：快速推荐页、首页热门推荐
-- **Query 参数**：
-  | 名称 | 类型 | 必填 | 说明 |
-  | --- | --- | --- | --- |
-  | `q` | string | 是 | 原始输入书名 |
-  | `k` | int | 否 | 推荐数量，默认 5 |
-- **成功响应**：
-
-```json
-{
-  "code": 0,
-  "data": {
-    "query_book": {
-      "book_id": "12345",
-      "title": "Harry Potter and the Sorcerer's Stone",
-      "author": "J. K. Rowling",
-      "image_url_m": "https://..."
-    },
+    "algorithm": { "id": "lightgbm", "name": "LightGBM Pairwise Similarity" },
+    "query_book": { "book_id": "12345", "title": "Harry Potter and the Sorcerer's Stone" },
     "recommendations": [
       {
         "book_id": "23456",
@@ -192,12 +125,59 @@
 }
 ```
 
+### 3.3 GET `/recommendations/by-title`
+快速推荐页、首页精选推荐共用接口。
+
+| 参数 | 说明 |
+| --- | --- |
+| `q` *(必填)* | 书名 |
+| `k` | 推荐条数，默认 5 |
+
+若未找到精确匹配，将返回 `code = 3` 并附带 `similar_titles` 供提示。
+
 ---
 
-## 4. 状态接口（可选）
+## 4. 系统信息
+
+### GET `/system/algorithms`
+用于在前端下拉框展示可选算法。
+
+```json
+{
+  "code": 0,
+  "data": {
+    "algorithms": [
+      { "id": "lightgbm", "name": "LightGBM Pairwise Similarity" },
+      { "id": "cf_mf", "name": "LightFM Collaborative Filtering" },
+      { "id": "din_content", "name": "DIN Content Recommendation" },
+      { "id": "user_cf", "name": "User-based CF (alias of LightFM)" },
+      ...
+    ]
+  }
+}
+```
 
 ### GET `/health`
-- **用途**：部署检测/监控
+部署或监控用，返回当前书籍数量与算法列表：
+
+```json
+{
+  "code": 0,
+  "data": {
+    "status": "healthy",
+    "total_books": 50000,
+    "algorithms": ["lightgbm", "cf_mf", "din_content"]
+  }
+}
+```
+
+---
+
+## 5. 调试提示
+
+- 前端会在 `services/api.js` 中统一处理超时、错误码和取消请求逻辑，同时根据 `BookCard` 的多语言文本（`src/i18n`）展示提示。
+- 若后端新增字段，请在 `BookCard` 或各页面中按需展示；旧字段缺失时前端会自动降级显示。
+- 所有接口默认 `k=5`，允许前端传入更大的值以展示更多卡片。
 - **响应**：`{"code":0,"data":{"status":"healthy"}}`
 
 ---
@@ -216,4 +196,10 @@
 | `score` | float | 推荐算法评分（0~1 或任意数值） |
 | `genres` | string[] | 可选，标签展示 |
 
-确保所有接口返回字段名一致，可避免前端再做额外映射。
+## 6. 国际化 & 部署补充
+
+- 前端会根据 `localStorage` / 浏览器语言决定 `locale`，但接口层依旧使用一致的字段名称；无需额外提供 `Accept-Language`。
+- 如果部署在不同域名，请确认后端开启 CORS 或在前端 `vite.config.js` 配置 `server.proxy`。生产部署模板可参考根目录的 `DEPLOYMENT.md`。
+- `GET /health` 可作为发布后的 smoke test，配合 `frontend/src/services/api.js` 的超时设置（默认 10s）能快速定位网络/服务异常。
+
+确保所有接口返回字段名一致，可避免前端再做额外映射。***

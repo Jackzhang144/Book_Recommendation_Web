@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted, ref, watch } from 'vue'
+import { computed, onMounted, ref, watch } from 'vue'
 import { RouterLink } from 'vue-router'
 import BookCard from '../components/BookCard.vue'
 import {
@@ -7,6 +7,7 @@ import {
   getRecommendationsByBook,
   getRecommendationsByBookAndAlgorithm,
 } from '../services/api'
+import { useI18n } from '../i18n'
 
 const props = defineProps({
   bookId: {
@@ -17,32 +18,41 @@ const props = defineProps({
 
 const book = ref(null)
 const bookLoading = ref(true)
-const bookError = ref('')
+const bookErrorMessage = ref('')
+const bookErrorActive = ref(false)
 
 const recommendations = ref([])
 const recLoading = ref(false)
-const recError = ref('')
+const recErrorMessage = ref('')
+const recErrorActive = ref(false)
 
 const algorithm = ref('lightgbm')
 const algoRecommendations = ref([])
 const algoLoading = ref(false)
-const algoError = ref('')
+const algoErrorMessage = ref('')
+const algoErrorActive = ref(false)
 
 const algorithmOptions = [
-  { id: 'lightgbm', name: 'LightGBM (课程必做)' },
-  { id: 'user_cf', name: 'User-based CF' },
-  { id: 'item_cf', name: 'Item-based CF' },
-  { id: 'deepfm', name: 'DeepFM' },
+  { id: 'lightgbm', name: 'LightGBM Pairwise Similarity' },
+  { id: 'cf_mf', name: 'LightFM Collaborative Filtering' },
+  { id: 'din_content', name: 'DIN Content-based Recommendation' },
 ]
+const { t } = useI18n()
+
+const bookErrorText = computed(() => bookErrorMessage.value || t('bookDetail.detail.error'))
+const recErrorText = computed(() => recErrorMessage.value || t('bookDetail.similar.error'))
+const algoErrorText = computed(() => algoErrorMessage.value || t('bookDetail.algorithm.error'))
 
 const fetchBook = async () => {
   bookLoading.value = true
-  bookError.value = ''
+  bookErrorMessage.value = ''
+  bookErrorActive.value = false
   try {
     const data = await getBookDetail(props.bookId)
     book.value = data.book || data
   } catch (error) {
-    bookError.value = error.message || '无法获取图书详情'
+    bookErrorMessage.value = error.message || ''
+    bookErrorActive.value = true
   } finally {
     bookLoading.value = false
   }
@@ -50,12 +60,14 @@ const fetchBook = async () => {
 
 const fetchRecommendations = async () => {
   recLoading.value = true
-  recError.value = ''
+  recErrorMessage.value = ''
+  recErrorActive.value = false
   try {
     const data = await getRecommendationsByBook(props.bookId)
     recommendations.value = data.recommendations || []
   } catch (error) {
-    recError.value = error.message || '无法获取相似图书'
+    recErrorMessage.value = error.message || ''
+    recErrorActive.value = true
     recommendations.value = []
   } finally {
     recLoading.value = false
@@ -64,7 +76,8 @@ const fetchRecommendations = async () => {
 
 const fetchAlgorithmRecommendations = async () => {
   algoLoading.value = true
-  algoError.value = ''
+  algoErrorMessage.value = ''
+  algoErrorActive.value = false
   try {
     const data = await getRecommendationsByBookAndAlgorithm(
       props.bookId,
@@ -72,7 +85,8 @@ const fetchAlgorithmRecommendations = async () => {
     )
     algoRecommendations.value = data.recommendations || []
   } catch (error) {
-    algoError.value = error.message || '算法接口暂不可用'
+    algoErrorMessage.value = error.message || ''
+    algoErrorActive.value = true
     algoRecommendations.value = []
   } finally {
     algoLoading.value = false
@@ -104,30 +118,29 @@ watch(
 
 <template>
   <div class="page">
-    <RouterLink class="link-button" :to="{ name: 'home' }">← 返回智能搜索</RouterLink>
+    <RouterLink class="link-button" :to="{ name: 'home' }">{{ t('bookDetail.back') }}</RouterLink>
 
     <section class="section">
       <header class="section__header">
         <div>
-          <p class="eyebrow">图书详情</p>
-          <h1>图书概览</h1>
+          <p class="eyebrow">{{ t('bookDetail.detail.eyebrow') }}</p>
+          <h1>{{ t('bookDetail.detail.title') }}</h1>
         </div>
       </header>
-      <div v-if="bookLoading" class="placeholder">加载详情...</div>
-      <div v-else-if="bookError" class="error">{{ bookError }}</div>
+      <div v-if="bookLoading" class="placeholder">{{ t('bookDetail.detail.loading') }}</div>
+      <div v-else-if="bookErrorActive" class="error">{{ bookErrorText }}</div>
       <BookCard v-else :book="book" :as-link="false" />
     </section>
 
     <section class="section">
       <header class="section__header">
         <div>
-          <p class="eyebrow">相似推荐</p>
-          <h2>默认算法的相似读物</h2>
-          <p class="muted">实时调用 GET /recommendations/by-book，展示默认召回算法的 Top-K 结果。</p>
+          <p class="eyebrow">{{ t('bookDetail.similar.eyebrow') }}</p>
+          <h2>{{ t('bookDetail.similar.title') }}</h2>
         </div>
       </header>
-      <div v-if="recLoading" class="placeholder">推荐加载中...</div>
-      <div v-else-if="recError" class="error">{{ recError }}</div>
+      <div v-if="recLoading" class="placeholder">{{ t('bookDetail.similar.loading') }}</div>
+      <div v-else-if="recErrorActive" class="error">{{ recErrorText }}</div>
       <div v-else class="grid grid--compact">
         <BookCard v-for="book in recommendations" :key="book.book_id" :book="book" compact />
       </div>
@@ -136,8 +149,8 @@ watch(
     <section class="section">
       <header class="section__header">
         <div>
-          <p class="eyebrow">算法对比</p>
-          <h2>切换不同算法的 Top-K 结果</h2>
+          <p class="eyebrow">{{ t('bookDetail.algorithm.eyebrow') }}</p>
+          <h2>{{ t('bookDetail.algorithm.title') }}</h2>
         </div>
         <select v-model="algorithm" class="select">
           <option v-for="option in algorithmOptions" :key="option.id" :value="option.id">
@@ -145,9 +158,9 @@ watch(
           </option>
         </select>
       </header>
-      <p class="muted">切换下拉框即可查看 LightGBM / CF / DeepFM 等算法的差异化输出，方便交付评审。</p>
-      <div v-if="algoLoading" class="placeholder">根据所选算法拉取推荐...</div>
-      <div v-else-if="algoError" class="warning">{{ algoError }}</div>
+      <p class="muted">{{ t('bookDetail.algorithm.helper') }}</p>
+      <div v-if="algoLoading" class="placeholder">{{ t('bookDetail.algorithm.loading') }}</div>
+      <div v-else-if="algoErrorActive" class="warning">{{ algoErrorText }}</div>
       <div v-else class="grid grid--compact">
         <BookCard v-for="book in algoRecommendations" :key="book.book_id" :book="book" compact />
       </div>

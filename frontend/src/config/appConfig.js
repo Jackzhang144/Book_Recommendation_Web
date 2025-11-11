@@ -28,5 +28,5 @@ export const appConfig = {
   /**
    * 首页“精选推荐”默认使用的基准书名，可通过 VITE_SHOWCASE_TITLE 定制。
    */
-  showcaseTitle: rawShowcaseTitle || 'Harry Potter',
+  showcaseTitle: rawShowcaseTitle || 'Classical Mythology',
 }

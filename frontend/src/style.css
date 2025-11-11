@@ -42,6 +42,12 @@ a {
   letter-spacing: 0.03em;
 }
 
+.app-header__actions {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
 .nav {
   display: flex;
   gap: 1.5rem;
@@ -143,10 +149,13 @@ h2 {
   grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
   gap: 1.25rem;
   margin-top: 1rem;
+  grid-auto-rows: minmax(220px, auto);
+  align-items: stretch;
 }
 
 .grid--compact {
   grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  grid-auto-rows: minmax(280px, auto);
 }
 
 .placeholder,

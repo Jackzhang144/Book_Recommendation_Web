@@ -1,0 +1,10 @@
+flask==3.0.2
+flask-cors==4.0.0
+pandas==2.2.3
+numpy==1.26.4
+scikit-learn==1.4.2
+scipy==1.11.4
+lightgbm==4.3.0
+lightfm @ git+https://github.com/lyst/lightfm@master
+matplotlib==3.8.4
+requests==2.32.3

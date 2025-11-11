@@ -6,3 +6,11 @@ import './style.css'
 const app = createApp(App)
 app.use(router)
 app.mount('#app')
+
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/service-worker.js').catch((error) => {
+      console.warn('Service worker registration failed:', error)
+    })
+  })
+}
