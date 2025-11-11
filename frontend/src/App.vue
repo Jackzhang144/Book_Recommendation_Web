@@ -8,10 +8,19 @@ const { t } = useI18n()
 
 <template>
   <div class="app-shell">
+    <div class="app-background" aria-hidden="true">
+      <div class="app-background__gradient app-background__gradient--primary"></div>
+      <div class="app-background__gradient app-background__gradient--secondary"></div>
+      <div class="app-background__orbit"></div>
+    </div>
     <header class="app-header">
-      <RouterLink class="logo" :to="{ name: 'home' }">{{ t('app.name') }}</RouterLink>
+      <div class="app-header__brand">
+        <RouterLink class="logo" :to="{ name: 'home' }">
+          <span class="logo__label">{{ t('app.name') }}</span>
+        </RouterLink>
+      </div>
       <div class="app-header__actions">
-        <nav class="nav">
+        <nav class="nav" aria-label="Primary">
           <RouterLink class="nav__link" :to="{ name: 'home' }">{{ t('app.nav.home') }}</RouterLink>
           <RouterLink class="nav__link" :to="{ name: 'quick-recommend' }">
             {{ t('app.nav.quick') }}

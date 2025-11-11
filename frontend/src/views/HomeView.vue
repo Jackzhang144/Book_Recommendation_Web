@@ -42,6 +42,7 @@ const demoBooks = [
 
 let activeSearchController
 const { t } = useI18n()
+const heroMetricKeys = ['coverage', 'latency', 'catalog']
 
 const searchError = computed(() => {
   const localized = searchErrorKey.value ? t(`home.errors.${searchErrorKey.value}`) : ''
@@ -54,6 +55,26 @@ const featuredError = computed(() => {
     return `${featuredErrorMessage.value} · ${localized}`
   }
   return featuredErrorMessage.value || localized
+})
+
+const heroMetrics = computed(() =>
+  heroMetricKeys.map((key) => ({
+    id: key,
+    value: t(`home.hero.metrics.${key}.value`),
+    label: t(`home.hero.metrics.${key}.label`),
+  })),
+)
+
+const heroSpotlight = computed(() => {
+  if (featuredBooks.value.length) {
+    return featuredBooks.value.slice(0, 3).map((book) => ({
+      author: book.author,
+      title: book.title,
+      meta: [book.publisher, book.year_of_publication].filter(Boolean).join(' · '),
+    }))
+  }
+  const localized = t('home.hero.spotlight')
+  return Array.isArray(localized) ? localized : []
 })
 
 const clearSearchError = () => {
@@ -119,20 +140,47 @@ onMounted(fetchFeatured)
 <template>
   <div class="page">
     <section class="hero">
-      <p class="eyebrow">{{ t('home.hero.eyebrow') }}</p>
-      <h1>{{ t('home.hero.title') }}</h1>
-      <p class="description">{{ t('home.hero.description') }}</p>
-      <div class="hero__actions">
-        <SearchBar
-          v-model="query"
-          :loading="searchLoading"
-          :label="t('home.searchBar.label')"
-          :placeholder="t('home.searchBar.placeholder')"
-          @submit="handleSearch"
-        />
-        <RouterLink class="link-button" :to="{ name: 'quick-recommend' }">
-          {{ t('home.hero.cta') }}
-        </RouterLink>
+      <div class="hero__layout">
+        <div class="hero__content">
+          <p class="eyebrow">{{ t('home.hero.eyebrow') }}</p>
+          <h1 class="hero__title">{{ t('home.hero.title') }}</h1>
+          <p class="hero__description">{{ t('home.hero.description') }}</p>
+          <div class="hero__actions">
+            <SearchBar
+              v-model="query"
+              :loading="searchLoading"
+              :label="t('home.searchBar.label')"
+              :placeholder="t('home.searchBar.placeholder')"
+              @submit="handleSearch"
+            />
+            <div class="hero__cta-row">
+              <RouterLink class="link-button" :to="{ name: 'quick-recommend' }">
+                {{ t('home.hero.cta') }}
+              </RouterLink>
+            </div>
+          </div>
+          <div class="hero__metrics">
+            <article v-for="metric in heroMetrics" :key="metric.id" class="hero__metric">
+              <p class="hero__metric-value">{{ metric.value }}</p>
+              <p class="hero__metric-label">{{ metric.label }}</p>
+            </article>
+          </div>
+        </div>
+        <div class="hero__visual">
+          <div class="hero__stack">
+            <article
+              v-for="(item, index) in heroSpotlight"
+              :key="item.title || index"
+              class="hero__stack-card"
+            >
+              <p class="hero__stack-eyebrow">{{ item.author }}</p>
+              <p class="hero__stack-title">{{ item.title }}</p>
+              <p v-if="item.meta" class="hero__stack-meta">
+                {{ item.meta }}
+              </p>
+            </article>
+          </div>
+        </div>
       </div>
       <p v-if="searchError" class="error">{{ searchError }}</p>
     </section>
@@ -156,7 +204,7 @@ onMounted(fetchFeatured)
       </div>
     </section>
 
-    <section class="section">
+    <section id="featured" class="section">
       <header class="section__header">
         <div>
           <p class="eyebrow">{{ t('home.sectionFeatured.eyebrow') }}</p>

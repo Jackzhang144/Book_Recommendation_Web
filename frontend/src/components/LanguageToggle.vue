@@ -43,28 +43,30 @@ const enLabel = computed(() => t('language.en'))
   display: inline-flex;
   align-items: center;
   gap: 0.35rem;
-  padding: 0.2rem 0.5rem;
+  padding: 0.25rem 0.7rem;
   border-radius: 999px;
   background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(20px);
 }
 
 .language-toggle__option {
   background: transparent;
   border: none;
   font-size: 0.85rem;
-  color: rgba(255, 255, 255, 0.7);
+  color: rgba(255, 255, 255, 0.65);
   cursor: pointer;
   padding: 0.1rem 0.2rem;
   font-weight: 600;
+  transition: color 0.2s ease;
 }
 
 .language-toggle__option--active {
   color: #fff;
-  text-decoration: underline;
 }
 
 .language-toggle__divider {
-  color: rgba(255, 255, 255, 0.4);
+  color: rgba(255, 255, 255, 0.35);
   font-size: 0.8rem;
 }
 </style>

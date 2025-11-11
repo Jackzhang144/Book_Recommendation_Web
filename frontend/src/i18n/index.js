@@ -25,6 +25,28 @@ const messages = {
         title: '一键接入的智能图书推荐体验',
         description: '搜索、推荐与算法切换一体化的图书体验。',
         cta: '查看即时推荐流程 →',
+        metrics: {
+          coverage: { value: '58+', label: '覆盖国家/地区' },
+          latency: { value: '<120ms', label: '平均响应延迟' },
+          catalog: { value: '230K', label: '带画像图书' },
+        },
+        spotlight: [
+          {
+            author: '玛德琳·英格',
+            title: '时间的皱折',
+            meta: 'Laurel Leaf · 1976',
+          },
+          {
+            author: '斯蒂芬·金',
+            title: '宠物公墓',
+            meta: 'Signet Book · 1984',
+          },
+          {
+            author: '玛丽·希金斯·克拉克',
+            title: '静观其变',
+            meta: 'Dell · 1986',
+          },
+        ],
       },
       searchBar: {
         label: '按书名或作者检索',
@@ -133,6 +155,28 @@ const messages = {
         title: 'Plug-and-play intelligent book recommendations',
         description: 'Search, recommendations, and algorithm comparisons in one UI.',
         cta: 'See the instant recommendation flow →',
+        metrics: {
+          coverage: { value: '58+', label: 'Markets with coverage' },
+          latency: { value: '<120ms', label: 'Median response time' },
+          catalog: { value: '230K', label: 'Titles with enrichment' },
+        },
+        spotlight: [
+          {
+            author: "Madeleine L'Engle",
+            title: 'A Wrinkle in Time',
+            meta: 'Laurel Leaf · 1976',
+          },
+          {
+            author: 'Stephen King',
+            title: 'Pet Sematary',
+            meta: 'Signet Book · 1984',
+          },
+          {
+            author: 'Mary Higgins Clark',
+            title: 'Stillwatch',
+            meta: 'Dell · 1986',
+          },
+        ],
       },
       searchBar: {
         label: 'Search by title or author',
