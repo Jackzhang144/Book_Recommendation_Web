@@ -8,12 +8,18 @@ from pathlib import Path
 import pandas as pd
 from sklearn.preprocessing import LabelEncoder, StandardScaler
 
-ROOT = Path(__file__).resolve().parents[1]
-if str(ROOT) not in sys.path:
-    sys.path.append(str(ROOT))
+BACKEND_ROOT = Path(__file__).resolve().parents[1]
+REPO_ROOT = BACKEND_ROOT.parent
+for path in (BACKEND_ROOT, REPO_ROOT):
+    if str(path) not in sys.path:
+        sys.path.append(str(path))
 
-from src.config import PROCESSED_DATA_DIR, RAW_DATA_DIR, ensure_directories  # noqa: E402
-from src.data_pipeline import clean_books, load_raw_books  # noqa: E402
+try:
+    from src.config import PROCESSED_DATA_DIR, RAW_DATA_DIR, ensure_directories  # type: ignore  # noqa: E402
+    from src.data_pipeline import clean_books, load_raw_books  # type: ignore  # noqa: E402
+except ModuleNotFoundError:  # pragma: no cover
+    from backend.src.config import PROCESSED_DATA_DIR, RAW_DATA_DIR, ensure_directories  # type: ignore  # noqa: E402
+    from backend.src.data_pipeline import clean_books, load_raw_books  # type: ignore  # noqa: E402
 
 
 def main():
@@ -50,4 +56,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
