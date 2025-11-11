@@ -8,6 +8,34 @@ const { t } = useI18n()
 
 <template>
   <div class="app-shell">
+    <svg class="app-filters" width="0" height="0" aria-hidden="true" focusable="false">
+      <defs>
+        <filter
+          id="liquid-glass"
+          x="-20%"
+          y="-20%"
+          width="140%"
+          height="140%"
+          color-interpolation-filters="sRGB"
+        >
+          <feTurbulence
+            type="fractalNoise"
+            baseFrequency="0.012 0.018"
+            numOctaves="3"
+            seed="8"
+            result="noise"
+          />
+          <feGaussianBlur in="noise" stdDeviation="12" result="blurredNoise" />
+          <feDisplacementMap
+            in="SourceGraphic"
+            in2="blurredNoise"
+            scale="22"
+            xChannelSelector="R"
+            yChannelSelector="B"
+          />
+        </filter>
+      </defs>
+    </svg>
     <div class="app-background" aria-hidden="true">
       <div class="app-background__gradient app-background__gradient--primary"></div>
       <div class="app-background__gradient app-background__gradient--secondary"></div>
