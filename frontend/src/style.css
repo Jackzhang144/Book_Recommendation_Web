@@ -35,6 +35,7 @@ a {
   isolation: isolate;
 }
 
+/* SVG filter 容器保持在文档流之外，供多个玻璃面板复用 */
 .app-filters {
   position: absolute;
   width: 0;
@@ -171,6 +172,7 @@ a {
   gap: 2.75rem;
 }
 
+/* 顶部英雄区：叠加渐变 + 折射滤镜，呈现液态玻璃质感 */
 .hero {
   position: relative;
   z-index: 0;
@@ -344,6 +346,7 @@ a {
   z-index: 1;
 }
 
+/* 所有板块容器复用滤镜，保证风格统一 */
 .section {
   position: relative;
   background: linear-gradient(

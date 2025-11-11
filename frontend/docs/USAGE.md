@@ -1,5 +1,7 @@
 # Book Recommendation Web · 前端使用说明
 
+> English version: [USAGE.en.md](USAGE.en.md)
+
 ## 1. 环境与依赖
 
 - Node.js ≥ 18，npm ≥ 10
@@ -70,4 +72,12 @@ npm run build        # 生成 dist/ 静态资源
 4. **多语言文案**：新增文案请在 `src/i18n/index.js` 同时补齐 `zh/en`；组件通过 `useI18n().t('key')` 读取。
 5. **无网络示例**：可在 `services/api.js` 注入 mock 数据，或参考首页 `demoBooks` 的容错写法。
 
-更多接口细节见 `docs/API.md`；部署到生产环境可参考根目录 `DEPLOYMENT.md`。***
+---
+
+## 7. 液态玻璃样式要点
+
+- `App.vue` 顶部注入的 `<svg class="app-filters">` 定义了 `#liquid-glass` 滤镜，通过 `feTurbulence + feGaussianBlur + feDisplacementMap` 模拟折射。
+- `src/style.css` 中的 `.hero`、`.section`、`.placeholder/.warning/.error` 均通过 `filter: url('#liquid-glass')` 与 `backdrop-filter` 叠加出液态玻璃效果；如需新增卡片，可沿用同样的结构。
+- Safari 对 `backdrop-filter` 的支持取决于用户设置，必要时可在 CSS 中提供降级的纯色背景。
+
+更多接口细节见 `docs/API.md`；部署到生产环境可参考根目录 `DEPLOYMENT.md`。

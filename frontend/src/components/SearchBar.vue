@@ -2,6 +2,7 @@
 import { computed, useId } from 'vue'
 import { useI18n } from '../i18n'
 
+// 搜索条组件同时承担输入、加载态与文案国际化
 const props = defineProps({
   modelValue: {
     type: String,

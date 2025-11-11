@@ -1,5 +1,7 @@
 # Book Recommendation Web
 
+> English version available in [README.en.md](README.en.md)
+
 一个端到端的图书推荐 Demo：前端基于 Vue 3 + Vite 呈现“搜索—详情—算法切换—快速推荐”全流程，并内置中英文双语 UI；后端提供数据探索、特征处理、三种推荐算法（LightGBM / LightFM / DIN 风格 TF-IDF）及统一 REST API。团队可参考 `apps.apple.com/` 目录中的 Apple App Store UI 拆解文档，复刻或延展更精致的界面与动效。
 
 ---
@@ -9,6 +11,7 @@
 - **多算法对比**：LightGBM 排序、矩阵分解协同过滤、内容相似推荐均可在详情页切换查看，满足课程对算法多样性的要求。
 - **实时交互**：前端首页支持联想搜索与精选推荐，详情页展示默认推荐 + 算法切换，快速推荐页用于答辩时即输即出。
 - **多语言体验**：`src/i18n` 提供轻量国际化，默认跟随浏览器/LocalStorage 切换中英，对应的切换入口位于导航栏 `LanguageToggle`。
+- **液态玻璃 UI**：前端通过 SVG `feDisplacementMap` + `backdrop-filter` 叠加实现“液态玻璃”折射效果，Hero、Section、状态提示等组件共享 `#liquid-glass` 滤镜，重现 apps.apple.com 的沉浸式观感。
 - **完整数据流程**：`backend/eda/` 提供数据概览、清洗、特征工程、可视化脚本，所有产物统一放在 `backend/data/processed/` 方便复现。
 - **接口契约清晰**：API 与《Book Recommendation Web API 文档（草案）》保持一致，前端只需配置 `VITE_API_BASE_URL` 即可对接。
 
@@ -113,4 +116,4 @@ VITE_API_BASE_URL=http://localhost:8000/api npm run dev
 
 ---
 
-如需更多接口字段，请参考 `frontend/docs/API.md`；前端使用指南见 `frontend/docs/USAGE.md`；部署流程见 `DEPLOYMENT.md`。欢迎基于现有架构扩展更多算法、特征或可视化。***
+如需更多接口字段，请参考 `frontend/docs/API.md`（英文版 `frontend/docs/API.en.md`）；前端使用指南见 `frontend/docs/USAGE.md`（英文版 `frontend/docs/USAGE.en.md`）；部署流程见 `DEPLOYMENT.md`（英文版 `DEPLOYMENT.en.md`）。欢迎基于现有架构扩展更多算法、特征或可视化。

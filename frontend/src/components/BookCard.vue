@@ -28,6 +28,7 @@ const linkTarget = computed(() =>
   isLinkable.value ? { name: 'book-detail', params: { bookId: props.book.book_id } } : null,
 )
 
+// 统一拼接出版年份与出版社，避免模板中到处做空值判断
 const bookMetadata = computed(() => {
   const metadata = []
   if (props.book.year_of_publication) {

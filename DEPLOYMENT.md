@@ -1,5 +1,7 @@
 # Book Recommendation Web · 部署指南
 
+> English version: [DEPLOYMENT.en.md](DEPLOYMENT.en.md)
+
 本文面向希望把系统发布到测试 / 生产环境的同学，覆盖后端 API、前端静态资源、环境变量、健康检查与常见拓展。示例默认使用 **Ubuntu 22.04 + systemd + Nginx**；若你选择 Docker/Cloud Run 等平台，可按相同逻辑替换命令。
 
 ---
@@ -96,7 +98,7 @@ npm ci
 VITE_API_BASE_URL=https://book.example.com/api npm run build
 ```
 
-将 `frontend/dist/` 上传到 `/srv/book-rec/www`. Nginx 配置示例：
+将 `frontend/dist/` 上传到 `/srv/book-rec/www`。由于前端的“液态玻璃”效果依赖 `App.vue` 中注入的 `#liquid-glass` SVG 滤镜，请确保部署过程不会移除 `<svg class="app-filters">` 片段或对其做 HTML 压缩删除。Nginx 配置示例：
 
 ```
 server {

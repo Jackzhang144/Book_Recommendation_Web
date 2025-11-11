@@ -8,6 +8,7 @@ const { t } = useI18n()
 
 <template>
   <div class="app-shell">
+    <!-- 全局液态玻璃滤镜定义：由噪声 + 位移映射叠加出折射效果 -->
     <svg class="app-filters" width="0" height="0" aria-hidden="true" focusable="false">
       <defs>
         <filter

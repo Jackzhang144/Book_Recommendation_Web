@@ -42,6 +42,7 @@ const demoBooks = [
 
 let activeSearchController
 const { t } = useI18n()
+// 控制英雄区指标的渲染顺序，便于多语言文案按需扩展
 const heroMetricKeys = ['coverage', 'latency', 'catalog']
 
 const searchError = computed(() => {
@@ -57,6 +58,7 @@ const featuredError = computed(() => {
   return featuredErrorMessage.value || localized
 })
 
+// 英雄区指标会跟随语言即时切换
 const heroMetrics = computed(() =>
   heroMetricKeys.map((key) => ({
     id: key,
@@ -65,6 +67,7 @@ const heroMetrics = computed(() =>
   })),
 )
 
+// 英雄区的 Spotlight 优先展示实时推荐，否则使用 i18n 中的静态 fallback
 const heroSpotlight = computed(() => {
   if (featuredBooks.value.length) {
     return featuredBooks.value.slice(0, 3).map((book) => ({
