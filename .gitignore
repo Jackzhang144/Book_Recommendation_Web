@@ -1,0 +1,19 @@
+# macOS / IDE
+.DS_Store
+.idea/
+*.iml
+
+# Logs
+*.log
+npm-debug.log*
+
+# Env & local configs
+.env*
+
+# Vite / Node
+node_modules/
+dist/
+
+# Build outputs
+frontend/dist/
+
