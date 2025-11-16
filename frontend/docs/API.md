@@ -151,7 +151,7 @@
     "algorithms": [
       { "id": "lightgbm", "name": "LightGBM Pairwise Similarity" },
       { "id": "cf_mf", "name": "LightFM Collaborative Filtering" },
-      { "id": "din_content", "name": "DIN Content Recommendation" },
+  { "id": "din_content", "name": "DIN Sequential Recommendation" },
       { "id": "user_cf", "name": "User-based CF (alias of LightFM)" },
       ...
     ]
@@ -168,7 +168,7 @@
   "data": {
     "status": "healthy",
     "total_books": 50000,
-    "algorithms": ["lightgbm", "cf_mf", "din_content"]
+  "algorithms": ["lightgbm", "cf_mf", "din_content"]
   }
 }
 ```

@@ -38,7 +38,7 @@ python eda/visualize_books.py    # 年度出版趋势、热门作者/出版社�
 | --- | --- | --- |
 | `lightgbm` | 以用户共现的图书对为训练样本，构造作者/出版社/年份/Jaccard/热度等特征，由 LightGBM 计算相似度 | 默认推荐、满足“必须包含 LightGBM”要求 |
 | `cf_mf` | 基于 LightFM 的矩阵分解协同过滤，聚焦评分 ≥40 的热门书与活跃用户 | 经典课堂算法 |
-| `din_content` | 对标题+作者+出版社做 TF-IDF，再基于余弦距离检索相似书（DIN 思想的内容模型） | 参考算法之一 |
+| `din_content` | 基于用户行为序列训练 DIN（Deep Interest Network），用注意力聚合阅读历史并预测下一本书 | 行为序列参考算法 |
 
 `/api/system/algorithms` 会返回上述算法及别名（`user_cf`、`item_cf`、`deepfm`），前端在切换算法时直接传入 `algorithm` 参数即可，`BookDetailView` 的语言切换对该结构无影响。
 

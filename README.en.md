@@ -2,13 +2,13 @@
 
 > 中文版请参见 [README.md](README.md)
 
-An end-to-end book recommendation demo. The frontend (Vue 3 + Vite) walks through “search → detail → algorithm comparison → instant recommendations” with bilingual UI, while the backend covers data exploration, feature engineering, and three recommendation algorithms (LightGBM / LightFM / DIN-style TF-IDF) exposed through a unified REST API. The visual layer follows the `apps.apple.com` breakdown inside this repo, recreating liquid-glass cards, orbit gradients, and micro-interactions.
+An end-to-end book recommendation demo. The frontend (Vue 3 + Vite) walks through “search → detail → algorithm comparison → instant recommendations” with bilingual UI, while the backend covers data exploration, feature engineering, and three recommendation algorithms (LightGBM / LightFM / DIN sequential modeling) exposed through a unified REST API. The visual layer follows the `apps.apple.com` breakdown inside this repo, recreating liquid-glass cards, orbit gradients, and micro-interactions.
 
 ---
 
 ## 1. Highlights
 
-- **Multi-algorithm comparison** – Toggle among LightGBM ranking, collaborative filtering, and DIN-style content recs directly on the detail page.
+- **Multi-algorithm comparison** – Toggle among LightGBM ranking, collaborative filtering, and DIN sequential recs directly on the detail page.
 - **Live interactions** – Instant search, curated picks, detail recommendations, and a dedicated “Quick Recommend” route for demos.
 - **Bilingual experience** – `src/i18n` handles locale detection/persistence plus the `LanguageToggle` UI in the nav.
 - **Liquid-glass UI** – SVG `feDisplacementMap` + `backdrop-filter` create the refractive “liquid glass” look across Hero/Section/status cards via a shared `#liquid-glass` filter.
@@ -39,7 +39,7 @@ backend/
 ├─ src/
 │  ├─ data_pipeline.py    # Loading/cleaning logic
 │  ├─ book_repository.py  # Query helpers + serialization
-│  ├─ recommendation/     # LightGBM / LightFM / DIN (TF-IDF)
+│  ├─ recommendation/     # LightGBM / LightFM / DIN Sequential
 │  └─ services/api.py     # Flask + Flask-CORS REST API
 ├─ requirements.txt
 └─ tests.py               # HTTP smoke test
@@ -110,7 +110,7 @@ All responses follow:
 | --- | --- |
 | (1) Dataset overview | `eda/dataset_overview.py` outputs shape, missing values, info, uniques, comparisons |
 | (2) Exploration & preprocessing | `eda/preprocess_books.py`, `eda/examine_books.py`, `eda/visualize_books.py` |
-| (3) Algorithm setup | LightGBM / LightFM / DIN (TF-IDF) under `backend/src/recommendation/` |
+| (3) Algorithm setup | LightGBM / LightFM / DIN sequential models under `backend/src/recommendation/` |
 | (4) Recommendation API | Unified `/api/recommendations/*` endpoints with book/title/algorithm variants |
 | (5) System demo | `frontend/` delivers the bilingual web demo with liquid-glass UI and LanguageToggle |
 

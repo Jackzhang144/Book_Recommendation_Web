@@ -5,7 +5,7 @@ from __future__ import annotations
 from typing import Dict, List, Optional, Tuple
 
 from .algorithms.base import AlgorithmInfo, BaseRecommender, RecommendationError
-from .algorithms.content_based import TfidfContentRecommender
+from .algorithms.content_based import DINContentRecommender
 from .algorithms.lightfm_cf import LightFMCollaborativeRecommender
 from .algorithms.lightgbm_pairwise import LightGBMPairwiseRecommender
 
@@ -26,7 +26,7 @@ class RecommendationEngine:
     def _initialize_algorithms(self) -> None:
         for cls in (
             LightGBMPairwiseRecommender,
-            TfidfContentRecommender,
+            DINContentRecommender,
             LightFMCollaborativeRecommender,
         ):
             instance = cls(self.book_repo)
@@ -40,7 +40,7 @@ class RecommendationEngine:
         alias_descriptions = {
             "user_cf": "User-based CF (alias of LightFM)",
             "item_cf": "Item-based CF (alias of LightFM)",
-            "deepfm": "DIN-style content model (alias of TF-IDF)",
+            "deepfm": "DIN content model (alias of DIN)",
         }
         for alias, target in self.aliases.items():
             base_list.append(

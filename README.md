@@ -2,7 +2,7 @@
 
 > English version available in [README.en.md](README.en.md)
 
-一个端到端的图书推荐 Demo：前端基于 Vue 3 + Vite 呈现“搜索—详情—算法切换—快速推荐”全流程，并内置中英文双语 UI；后端提供数据探索、特征处理、三种推荐算法（LightGBM / LightFM / DIN 风格 TF-IDF）及统一 REST API。团队可参考 `apps.apple.com/` 目录中的 Apple App Store UI 拆解文档，复刻或延展更精致的界面与动效。
+一个端到端的图书推荐 Demo：前端基于 Vue 3 + Vite 呈现“搜索—详情—算法切换—快速推荐”全流程，并内置中英文双语 UI；后端提供数据探索、特征处理、三种推荐算法（LightGBM / LightFM / DIN 序列行为模型）及统一 REST API。团队可参考 `apps.apple.com/` 目录中的 Apple App Store UI 拆解文档，复刻或延展更精致的界面与动效。
 
 ---
 
@@ -39,7 +39,7 @@ backend/
 ├─ src/
 │  ├─ data_pipeline.py    # 数据加载/清洗逻辑
 │  ├─ book_repository.py  # 书目查询、序列化
-│  ├─ recommendation/     # LightGBM / LightFM / DIN(TF-IDF)
+│  ├─ recommendation/     # LightGBM / LightFM / DIN Sequential
 │  └─ services/api.py     # Flask + Flask-CORS REST API
 ├─ requirements.txt
 └─ tests.py               # HTTP smoke test
@@ -110,7 +110,7 @@ VITE_API_BASE_URL=http://localhost:8000/api npm run dev
 | --- | --- |
 | (1) 数据集信息提取 | `eda/dataset_overview.py` 输出 shape、缺失值、info、unique、comparison dataset |
 | (2) 数据探索与预处理 | `eda/preprocess_books.py`、`eda/examine_books.py`、`eda/visualize_books.py` 负责特征工程与可视化 |
-| (3) 算法定义 | LightGBM、LightFM、DIN(TF-IDF) 三种算法，`backend/src/recommendation/algorithms/` |
+| (3) 算法定义 | LightGBM、LightFM、DIN 序列推荐三种算法，`backend/src/recommendation/algorithms/` |
 | (4) 图书推荐实现 | `/api/recommendations/*` 接口统一返回 Top-K 推荐，支持按书名/ID/算法切换 |
 | (5) 系统展示 | `frontend/` 完成“搜索—详情—算法对比—快速推荐”的网页 Demo（含 i18n / LanguageToggle） |
 

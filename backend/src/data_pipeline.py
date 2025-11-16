@@ -34,6 +34,11 @@ def load_raw_ratings() -> pd.DataFrame:
     return _read_csv(RAW_DATA_DIR / "Ratings.csv")
 
 
+def load_raw_users() -> pd.DataFrame:
+    """Load the original Users dataset."""
+    return _read_csv(RAW_DATA_DIR / "Users.csv")
+
+
 def clean_books(raw_df: pd.DataFrame) -> pd.DataFrame:
     """Apply data cleaning rules required by the project rubric."""
     df = raw_df.copy()
@@ -76,6 +81,14 @@ def get_ratings(filtered: bool = True) -> pd.DataFrame:
     if filtered:
         ratings = ratings[ratings["Book-Rating"] > 0]
     return ratings
+
+
+def get_users() -> pd.DataFrame:
+    """Return the Users dataset with normalized column names."""
+    users = load_raw_users()
+    users.columns = ["User-ID", "Location", "Age"]
+    users["Age"] = pd.to_numeric(users["Age"], errors="coerce")
+    return users
 
 
 def get_book_rating_stats(ratings: pd.DataFrame) -> pd.DataFrame:
